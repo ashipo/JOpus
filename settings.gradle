@@ -13,4 +13,4 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "JOpus"
-include ':lib'
+include(":lib")
