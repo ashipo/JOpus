@@ -1,6 +1,6 @@
 plugins {
-    id 'com.android.library'
-    id 'org.jetbrains.kotlin.android'
+    id("com.android.library")
+    id("org.jetbrains.kotlin.android")
 }
 
 kotlin {
@@ -8,32 +8,32 @@ kotlin {
 }
 
 android {
-    namespace 'com.fake.jopus'
-    compileSdk 34
+    namespace = "com.fake.jopus"
+    compileSdk = 34
 
     defaultConfig {
-        minSdk 21
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
+        minSdk = 21
 
         externalNativeBuild {
             cmake {
-                cppFlags ""
+                cppFlags += listOf("")
             }
         }
     }
 
     buildTypes {
         release {
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
         }
     }
     externalNativeBuild {
         cmake {
-            path "src/main/cpp/CMakeLists.txt"
+            path = file("src/main/cpp/CMakeLists.txt")
         }
     }
-    buildToolsVersion = '34.0.0'
-    ndkVersion '25.2.9519653'
+    buildToolsVersion = "34.0.0"
+    ndkVersion = "25.2.9519653"
 }
