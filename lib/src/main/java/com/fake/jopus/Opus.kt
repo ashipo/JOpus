@@ -27,6 +27,12 @@ class Opus {
         fec: Int
     ): Int
 
+    external fun plc(
+        decodedData: ByteArray,
+        decodedFrames: Int,
+        fec: Int
+    ): Int
+
     external fun releaseDecoder()
 
     external fun strerror(error: Int): String

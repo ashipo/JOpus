@@ -27,12 +27,28 @@ Java_com_fake_jopus_Opus_decode(JNIEnv *env, jobject, jbyteArray encodedData, ji
                                    reinterpret_cast<opus_int16 *>(nativeDecodedData),
                                    decodedFrames,
                                    fec);
-
     env->ReleasePrimitiveArrayCritical(decodedData, nativeDecodedData, 0);
     env->ReleasePrimitiveArrayCritical(encodedData, nativeEncodedData, JNI_ABORT);
 
     if (result < 0) {
         __android_log_print(ANDROID_LOG_ERROR, TAG, "Decode error: %s", opus_strerror(result));
+    }
+    return result;
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_com_fake_jopus_Opus_plc(JNIEnv *env, jobject, jbyteArray decodedData, jint decodedFrames, jint fec) {
+    auto *nativeDecodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(decodedData, 0));
+    const int result = opus_decode(opusDecoder,
+                                   NULL,
+                                   0,
+                                   reinterpret_cast<opus_int16 *>(nativeDecodedData),
+                                   decodedFrames,
+                                   fec);
+    env->ReleasePrimitiveArrayCritical(decodedData, nativeDecodedData, 0);
+
+    if (result < 0) {
+        __android_log_print(ANDROID_LOG_ERROR, TAG, "Decode PLC error: %s", opus_strerror(result));
     }
     return result;
 }
