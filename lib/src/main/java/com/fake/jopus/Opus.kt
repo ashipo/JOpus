@@ -21,9 +21,9 @@ class Opus {
 
     external fun decode(
         encodedData: ByteArray,
-        encodedLength: Int,
+        encodedBytes: Int,
         decodedData: ByteArray,
-        frameSize: Int,
+        decodedFrames: Int,
         fec: Int
     ): Int
 
