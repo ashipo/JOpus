@@ -18,21 +18,37 @@ Java_com_fake_jopus_Opus_initDecoder(JNIEnv *env, jobject, jint sampleRate, jint
 }
 
 extern "C" JNIEXPORT jint JNICALL
-Java_com_fake_jopus_Opus_decode(JNIEnv *env, jobject, jbyteArray encodedData, jint encodedLength, jbyteArray decodedData, jint frameSize, jint fec) {
-    auto *nativeEncodedBytes = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(encodedData, 0));
-    auto *nativeDecodedBytes = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(decodedData, 0));
+Java_com_fake_jopus_Opus_decode(JNIEnv *env, jobject, jbyteArray encodedData, jint encodedBytes, jbyteArray decodedData, jint decodedFrames, jint fec) {
+    auto *nativeEncodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(encodedData, 0));
+    auto *nativeDecodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(decodedData, 0));
     const int result = opus_decode(opusDecoder,
-                                   reinterpret_cast<const unsigned char *>(nativeEncodedBytes),
-                                   encodedLength,
-                                   reinterpret_cast<opus_int16 *>(nativeDecodedBytes),
-                                   frameSize,
+                                   reinterpret_cast<const unsigned char *>(nativeEncodedData),
+                                   encodedBytes,
+                                   reinterpret_cast<opus_int16 *>(nativeDecodedData),
+                                   decodedFrames,
                                    fec);
-
-    env->ReleasePrimitiveArrayCritical(decodedData, nativeDecodedBytes, 0);
-    env->ReleasePrimitiveArrayCritical(encodedData, nativeEncodedBytes, JNI_ABORT);
+    env->ReleasePrimitiveArrayCritical(decodedData, nativeDecodedData, 0);
+    env->ReleasePrimitiveArrayCritical(encodedData, nativeEncodedData, JNI_ABORT);
 
     if (result < 0) {
         __android_log_print(ANDROID_LOG_ERROR, TAG, "Decode error: %s", opus_strerror(result));
+    }
+    return result;
+}
+
+extern "C" JNIEXPORT jint JNICALL
+Java_com_fake_jopus_Opus_plc(JNIEnv *env, jobject, jbyteArray decodedData, jint decodedFrames, jint fec) {
+    auto *nativeDecodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(decodedData, 0));
+    const int result = opus_decode(opusDecoder,
+                                   NULL,
+                                   0,
+                                   reinterpret_cast<opus_int16 *>(nativeDecodedData),
+                                   decodedFrames,
+                                   fec);
+    env->ReleasePrimitiveArrayCritical(decodedData, nativeDecodedData, 0);
+
+    if (result < 0) {
+        __android_log_print(ANDROID_LOG_ERROR, TAG, "Decode PLC error: %s", opus_strerror(result));
     }
     return result;
 }
