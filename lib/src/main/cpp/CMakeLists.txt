@@ -6,22 +6,22 @@ cmake_minimum_required(VERSION 3.18.1)
 
 project("jopus")
 
-set( opus_DIR opus )
+set(opus_DIR opus)
 
 include_directories(
         ${opus_DIR}/include
         ${opus_DIR}/celt
-        ${opus_DIR}/silk )
+        ${opus_DIR}/silk)
 
-set( opus_src_DIR ${opus_DIR}/src )
+set(opus_src_DIR ${opus_DIR}/src)
 
-set( OPUS_SRC
+set(OPUS_SRC
         "${opus_src_DIR}/opus.c"
-        "${opus_src_DIR}/opus_decoder.c" )
+        "${opus_src_DIR}/opus_decoder.c")
 
-set( celt_src_DIR ${opus_DIR}/celt )
+set(celt_src_DIR ${opus_DIR}/celt)
 
-set ( CELT_SRC
+set(CELT_SRC
         "${celt_src_DIR}/bands.c"
         "${celt_src_DIR}/celt.c"
         "${celt_src_DIR}/celt_decoder.c"
@@ -38,11 +38,11 @@ set ( CELT_SRC
         "${celt_src_DIR}/pitch.c"
         "${celt_src_DIR}/quant_bands.c"
         "${celt_src_DIR}/rate.c"
-        "${celt_src_DIR}/vq.c" )
+        "${celt_src_DIR}/vq.c")
 
-set( silk_src_DIR ${opus_DIR}/silk )
+set(silk_src_DIR ${opus_DIR}/silk)
 
-set ( SILK_SRC
+set(SILK_SRC
         "${silk_src_DIR}/bwexpander.c"
         "${silk_src_DIR}/bwexpander_32.c"
         "${silk_src_DIR}/CNG.c"
@@ -86,15 +86,15 @@ set ( SILK_SRC
         "${silk_src_DIR}/tables_NLSF_CB_WB.c"
         "${silk_src_DIR}/tables_other.c"
         "${silk_src_DIR}/tables_pitch_lag.c"
-        "${silk_src_DIR}/tables_pulses_per_block.c" )
+        "${silk_src_DIR}/tables_pulses_per_block.c")
 
-set( CMAKE_C_FLAGS "-DUSE_ALLOCA -DOPUS_BUILD -DFIXED_POINT=1 -DDISABLE_FLOAT_API \
-        -DHAVE_LRINT=1 -DHAVE_LRINTF=1" )
+set(CMAKE_C_FLAGS "-DUSE_ALLOCA -DOPUS_BUILD -DFIXED_POINT=1 -DDISABLE_FLOAT_API \
+        -DHAVE_LRINT=1 -DHAVE_LRINTF=1")
 
 add_library(
         opus
         STATIC
-        ${OPUS_SRC} ${CELT_SRC} ${SILK_SRC} )
+        ${OPUS_SRC} ${CELT_SRC} ${SILK_SRC})
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
