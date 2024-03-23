@@ -16,7 +16,7 @@ android {
 
         externalNativeBuild {
             cmake {
-                cppFlags += listOf("")
+                cppFlags += listOf()
             }
         }
     }
