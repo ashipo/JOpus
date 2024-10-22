@@ -1,16 +1,28 @@
 #include <jni.h>
 #include <string>
+#include <memory>
 #include <android/log.h>
 
 #include "opus.h"
 
-OpusDecoder *opusDecoder = nullptr;
 const char *TAG = "JOpus";
+
+struct DecoderDeleter {
+    void operator()(OpusDecoder* decoder) const {
+        opus_decoder_destroy(decoder);
+    }
+};
+using Decoder = std::unique_ptr<OpusDecoder, DecoderDeleter&>;
+DecoderDeleter decoderDeleter_;
+Decoder decoder_{ nullptr, decoderDeleter_ };
 
 extern "C" JNIEXPORT jint JNICALL
 Java_com_fake_jopus_Opus_initDecoder(JNIEnv *env, jobject, jint sampleRate, jint numChannels) {
-    int error;
-    opusDecoder = opus_decoder_create(sampleRate, numChannels, &error);
+    int error{};
+    decoder_ = Decoder(
+        opus_decoder_create(sampleRate, numChannels, &error),
+        decoderDeleter_
+    );
     if (error != OPUS_OK) {
         __android_log_print(ANDROID_LOG_ERROR, TAG, "Init decoder error: %s", opus_strerror(error));
     }
@@ -21,7 +33,7 @@ extern "C" JNIEXPORT jint JNICALL
 Java_com_fake_jopus_Opus_decode(JNIEnv *env, jobject, jbyteArray encodedData, jint encodedBytes, jbyteArray decodedData, jint decodedFrames, jint fec) {
     auto *nativeEncodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(encodedData, 0));
     auto *nativeDecodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(decodedData, 0));
-    const int result = opus_decode(opusDecoder,
+    const int result = opus_decode(decoder_.get(),
                                    reinterpret_cast<const unsigned char *>(nativeEncodedData),
                                    encodedBytes,
                                    reinterpret_cast<opus_int16 *>(nativeDecodedData),
@@ -39,7 +51,7 @@ Java_com_fake_jopus_Opus_decode(JNIEnv *env, jobject, jbyteArray encodedData, ji
 extern "C" JNIEXPORT jint JNICALL
 Java_com_fake_jopus_Opus_plc(JNIEnv *env, jobject, jbyteArray decodedData, jint decodedFrames, jint fec) {
     auto *nativeDecodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(decodedData, 0));
-    const int result = opus_decode(opusDecoder,
+    const int result = opus_decode(decoder_.get(),
                                    NULL,
                                    0,
                                    reinterpret_cast<opus_int16 *>(nativeDecodedData),
@@ -55,8 +67,7 @@ Java_com_fake_jopus_Opus_plc(JNIEnv *env, jobject, jbyteArray decodedData, jint 
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_fake_jopus_Opus_releaseDecoder(JNIEnv *env, jobject) {
-    if (opusDecoder) opus_decoder_destroy(opusDecoder);
-    opusDecoder = nullptr;
+    decoder_.reset();
 }
 
 extern "C" JNIEXPORT jstring JNICALL
