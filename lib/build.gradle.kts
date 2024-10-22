@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
+    `maven-publish`
 }
 
 kotlin {
@@ -35,5 +36,23 @@ android {
         }
     }
     buildToolsVersion = "34.0.0"
-    ndkVersion = "26.2.11394342"
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+        }
+    }
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.github.ashipo"
+            artifactId = "jopus"
+            version = "0.2.1"
+
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
 }
