@@ -28,6 +28,14 @@ jint JNICALL initDecoder(JNIEnv *env, jobject, jint sampleRate, jint numChannels
     return (jint)error;
 }
 
+void JNICALL releaseDecoder(JNIEnv *env, jobject) {
+    decoder_.reset();
+}
+
+jstring JNICALL getErrorString(JNIEnv* env, jobject, jint error) {
+    return env->NewStringUTF(opus_strerror(error));
+}
+
 jint JNICALL decode(JNIEnv *env, jobject, jbyteArray encodedData, jint encodedBytes, jbyteArray decodedData, jint decodedFrames, jint fec) {
     auto *nativeEncodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(encodedData, 0));
     auto *nativeDecodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(decodedData, 0));
@@ -66,14 +74,6 @@ jint JNICALL plc(JNIEnv *env, jobject, jbyteArray decodedData, jint decodedFrame
     return result;
 }
 
-void JNICALL releaseDecoder(JNIEnv *env, jobject) {
-    decoder_.reset();
-}
-
-jstring JNICALL getErrorString(JNIEnv* env, jobject, jint error) {
-    return env->NewStringUTF(opus_strerror(error));
-}
-
 // https://developer.android.com/training/articles/perf-jni#native-libraries
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     JNIEnv* env;
@@ -87,9 +87,9 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     static const JNINativeMethod methods[] = {
         {"initDecoder", "(II)I", reinterpret_cast<void*>(initDecoder)},
         {"releaseDecoder", "()V", reinterpret_cast<void*>(releaseDecoder)},
+        {"strerror", "(I)Ljava/lang/String;", reinterpret_cast<void*>(getErrorString)},
         {"decode", "([BI[BII)I", reinterpret_cast<void*>(decode)},
         {"plc", "([BII)I", reinterpret_cast<void*>(plc)},
-        {"strerror", "(I)Ljava/lang/String;", reinterpret_cast<void*>(getErrorString)},
     };
     int rc = env->RegisterNatives(c, methods, sizeof(methods)/sizeof(JNINativeMethod));
     if (rc != JNI_OK) return rc;

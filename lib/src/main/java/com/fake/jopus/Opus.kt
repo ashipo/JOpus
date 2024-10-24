@@ -1,5 +1,7 @@
 package com.fake.jopus
 
+import dalvik.annotation.optimization.FastNative
+
 const val OPUS_OK = 0
 const val OPUS_BAD_ARG = -1
 const val OPUS_BUFFER_TOO_SMALL = -2
@@ -19,6 +21,13 @@ class Opus {
 
     external fun initDecoder(sampleRate: Int, numChannels: Int): Int
 
+    @FastNative
+    external fun releaseDecoder()
+
+    @FastNative
+    external fun strerror(error: Int): String
+
+    @FastNative
     external fun decode(
         encodedData: ByteArray,
         encodedBytes: Int,
@@ -27,14 +36,10 @@ class Opus {
         fec: Int
     ): Int
 
+    @FastNative
     external fun plc(
         decodedData: ByteArray,
         decodedFrames: Int,
         fec: Int
     ): Int
-
-    external fun releaseDecoder()
-
-    external fun strerror(error: Int): String
-
 }
