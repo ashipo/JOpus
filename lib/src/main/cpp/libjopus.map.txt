@@ -1,0 +1,6 @@
+LIBJOPUS {
+  global:
+    JNI_OnLoad;
+  local:
+    *;
+};

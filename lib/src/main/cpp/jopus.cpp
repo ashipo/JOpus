@@ -16,8 +16,7 @@ using Decoder = std::unique_ptr<OpusDecoder, DecoderDeleter&>;
 DecoderDeleter decoderDeleter_;
 Decoder decoder_{ nullptr, decoderDeleter_ };
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_fake_jopus_Opus_initDecoder(JNIEnv *env, jobject, jint sampleRate, jint numChannels) {
+jint JNICALL initDecoder(JNIEnv *env, jobject, jint sampleRate, jint numChannels) {
     int error{};
     decoder_ = Decoder(
         opus_decoder_create(sampleRate, numChannels, &error),
@@ -29,16 +28,17 @@ Java_com_fake_jopus_Opus_initDecoder(JNIEnv *env, jobject, jint sampleRate, jint
     return (jint)error;
 }
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_fake_jopus_Opus_decode(JNIEnv *env, jobject, jbyteArray encodedData, jint encodedBytes, jbyteArray decodedData, jint decodedFrames, jint fec) {
+jint JNICALL decode(JNIEnv *env, jobject, jbyteArray encodedData, jint encodedBytes, jbyteArray decodedData, jint decodedFrames, jint fec) {
     auto *nativeEncodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(encodedData, 0));
     auto *nativeDecodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(decodedData, 0));
-    const int result = opus_decode(decoder_.get(),
-                                   reinterpret_cast<const unsigned char *>(nativeEncodedData),
-                                   encodedBytes,
-                                   reinterpret_cast<opus_int16 *>(nativeDecodedData),
-                                   decodedFrames,
-                                   fec);
+    const int result = opus_decode(
+            decoder_.get(),
+            reinterpret_cast<const unsigned char *>(nativeEncodedData),
+            encodedBytes,
+            reinterpret_cast<opus_int16 *>(nativeDecodedData),
+            decodedFrames,
+            fec
+    );
     env->ReleasePrimitiveArrayCritical(decodedData, nativeDecodedData, 0);
     env->ReleasePrimitiveArrayCritical(encodedData, nativeEncodedData, JNI_ABORT);
 
@@ -48,15 +48,16 @@ Java_com_fake_jopus_Opus_decode(JNIEnv *env, jobject, jbyteArray encodedData, ji
     return result;
 }
 
-extern "C" JNIEXPORT jint JNICALL
-Java_com_fake_jopus_Opus_plc(JNIEnv *env, jobject, jbyteArray decodedData, jint decodedFrames, jint fec) {
+jint JNICALL plc(JNIEnv *env, jobject, jbyteArray decodedData, jint decodedFrames, jint fec) {
     auto *nativeDecodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(decodedData, 0));
-    const int result = opus_decode(decoder_.get(),
-                                   NULL,
-                                   0,
-                                   reinterpret_cast<opus_int16 *>(nativeDecodedData),
-                                   decodedFrames,
-                                   fec);
+    const int result = opus_decode(
+            decoder_.get(),
+            nullptr,
+            0,
+            reinterpret_cast<opus_int16 *>(nativeDecodedData),
+            decodedFrames,
+            fec
+    );
     env->ReleasePrimitiveArrayCritical(decodedData, nativeDecodedData, 0);
 
     if (result < 0) {
@@ -65,12 +66,33 @@ Java_com_fake_jopus_Opus_plc(JNIEnv *env, jobject, jbyteArray decodedData, jint 
     return result;
 }
 
-extern "C" JNIEXPORT void JNICALL
-Java_com_fake_jopus_Opus_releaseDecoder(JNIEnv *env, jobject) {
+void JNICALL releaseDecoder(JNIEnv *env, jobject) {
     decoder_.reset();
 }
 
-extern "C" JNIEXPORT jstring JNICALL
-Java_com_fake_jopus_Opus_strerror(JNIEnv* env, jobject, jint error) {
+jstring JNICALL getErrorString(JNIEnv* env, jobject, jint error) {
     return env->NewStringUTF(opus_strerror(error));
+}
+
+// https://developer.android.com/training/articles/perf-jni#native-libraries
+JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+    JNIEnv* env;
+    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR;
+    }
+
+    jclass c = env->FindClass("com/fake/jopus/Opus");
+    if (c == nullptr) return JNI_ERR;
+
+    static const JNINativeMethod methods[] = {
+        {"initDecoder", "(II)I", reinterpret_cast<void*>(initDecoder)},
+        {"releaseDecoder", "()V", reinterpret_cast<void*>(releaseDecoder)},
+        {"decode", "([BI[BII)I", reinterpret_cast<void*>(decode)},
+        {"plc", "([BII)I", reinterpret_cast<void*>(plc)},
+        {"strerror", "(I)Ljava/lang/String;", reinterpret_cast<void*>(getErrorString)},
+    };
+    int rc = env->RegisterNatives(c, methods, sizeof(methods)/sizeof(JNINativeMethod));
+    if (rc != JNI_OK) return rc;
+
+    return JNI_VERSION_1_6;
 }
