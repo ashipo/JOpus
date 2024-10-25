@@ -46,10 +46,10 @@ class CommonBenchmark {
     }
 
     @Test
-    fun strerror() {
+    fun getErrorString() {
         val opus = Opus()
         benchmarkRule.measureRepeated {
-            opus.strerror(OPUS_BAD_ARG)
+            opus.getErrorString(OPUS_BAD_ARG)
         }
     }
 }
