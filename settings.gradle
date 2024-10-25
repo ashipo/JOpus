@@ -12,6 +12,6 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "JOpus"
+rootProject.name = "jopus"
 include(":lib")
 include(":microbenchmark")
