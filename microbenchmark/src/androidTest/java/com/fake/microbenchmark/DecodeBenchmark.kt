@@ -19,13 +19,13 @@ class DecodeBenchmark {
     /**
      * Maximum packet frames (120ms, 48kHz)
      */
-    private val decodedFrames = 5760
+    private val outputFrames = 5760
 
     /**
      * Output signal buffer
      * Size = 5760 (maximum packet frames) * 2 (channels) * 2 (sizeof(int16))
      */
-    private val decodedData = ByteArray(decodedFrames * 2 * 2)
+    private val output = ByteArray(outputFrames * 2 * 2)
     private val samplingRate = 48_000
     private val channels = 2
 
@@ -48,9 +48,10 @@ class DecodeBenchmark {
         val initResult = opus.initDecoder(samplingRate, channels)
         assertEquals("Decoder init error: $initResult", OPUS_OK, initResult)
         benchmarkRule.measureRepeated {
-            val samplesDecoded = opus.decode(opusData, 320, decodedData, decodedFrames, 0)
+            val framesDecoded = opus.decode(opusData, 320, output, outputFrames, 0)
+
             runWithTimingDisabled {
-                assertFalse("Decode error: $samplesDecoded", samplesDecoded < 0)
+                assertFalse("Decode error: $framesDecoded", framesDecoded < 0)
             }
         }
         opus.releaseDecoder()
@@ -68,13 +69,15 @@ class DecodeBenchmark {
             runWithTimingDisabled {
                 // Decode several non PLC packets in between
                 repeat(3) {
-                    val samplesDecoded = opus.decode(opusData, 320, decodedData, decodedFrames, 0)
-                    assertFalse("Decode error: $samplesDecoded", samplesDecoded < 0)
+                    val framesDecoded = opus.decode(opusData, 320, output, outputFrames, 0)
+                    assertFalse("Decode error: $framesDecoded", framesDecoded < 0)
                 }
             }
-            val samplesDecoded = opus.plc(decodedData, plcFrames, 0)
+
+            val framesDecoded = opus.plc(output, plcFrames)
+
             runWithTimingDisabled {
-                assertFalse("PLC error: $samplesDecoded", samplesDecoded < 0)
+                assertFalse("PLC error: $framesDecoded", framesDecoded < 0)
             }
         }
         opus.releaseDecoder()

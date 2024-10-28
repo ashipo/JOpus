@@ -16,10 +16,10 @@ using Decoder = std::unique_ptr<OpusDecoder, DecoderDeleter&>;
 DecoderDeleter decoderDeleter_;
 Decoder decoder_{ nullptr, decoderDeleter_ };
 
-jint JNICALL initDecoder(JNIEnv *env, jobject, jint sampleRate, jint numChannels) {
+jint JNICALL initDecoder(JNIEnv *env, jobject, jint sampleRate, jint channels) {
     int error{};
     decoder_ = Decoder(
-        opus_decoder_create(sampleRate, numChannels, &error),
+        opus_decoder_create(sampleRate, channels, &error),
         decoderDeleter_
     );
     if (error != OPUS_OK) {
@@ -56,7 +56,7 @@ jint JNICALL decode(JNIEnv *env, jobject, jbyteArray encodedData, jint encodedBy
     return result;
 }
 
-jint JNICALL plc(JNIEnv *env, jobject, jbyteArray decodedData, jint decodedFrames, jint fec) {
+jint JNICALL plc(JNIEnv *env, jobject, jbyteArray decodedData, jint decodedFrames) {
     auto *nativeDecodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(decodedData, 0));
     const int result = opus_decode(
             decoder_.get(),
@@ -64,7 +64,7 @@ jint JNICALL plc(JNIEnv *env, jobject, jbyteArray decodedData, jint decodedFrame
             0,
             reinterpret_cast<opus_int16 *>(nativeDecodedData),
             decodedFrames,
-            fec
+            0
     );
     env->ReleasePrimitiveArrayCritical(decodedData, nativeDecodedData, 0);
 
@@ -87,9 +87,9 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     static const JNINativeMethod methods[] = {
         {"initDecoder", "(II)I", reinterpret_cast<void*>(initDecoder)},
         {"releaseDecoder", "()V", reinterpret_cast<void*>(releaseDecoder)},
-        {"strerror", "(I)Ljava/lang/String;", reinterpret_cast<void*>(getErrorString)},
+        {"getErrorString", "(I)Ljava/lang/String;", reinterpret_cast<void*>(getErrorString)},
         {"decode", "([BI[BII)I", reinterpret_cast<void*>(decode)},
-        {"plc", "([BII)I", reinterpret_cast<void*>(plc)},
+        {"plc", "([BI)I", reinterpret_cast<void*>(plc)},
     };
     int rc = env->RegisterNatives(c, methods, sizeof(methods)/sizeof(JNINativeMethod));
     if (rc != JNI_OK) return rc;

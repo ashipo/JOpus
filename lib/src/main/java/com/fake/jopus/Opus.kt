@@ -19,27 +19,68 @@ class Opus {
         }
     }
 
-    external fun initDecoder(sampleRate: Int, numChannels: Int): Int
+    /**
+     * Initiates the decoder
+     *
+     * @param sampleRate sample rate to decode at (Hz). Must be one of 8000, 12000, 16000, 24000
+     * or 48000
+     * @param channels number of channels to decode (1 or 2)
+     * @return [OPUS_OK] on success or an error code
+     */
+    external fun initDecoder(sampleRate: Int, channels: Int): Int
 
+    /**
+     * Destroys the decoder
+     */
     @FastNative
     external fun releaseDecoder()
 
+    /**
+     * Converts an Opus error code into a human readable string
+     *
+     * @param error error code
+     * @return error string
+     */
     @FastNative
-    external fun strerror(error: Int): String
+    external fun getErrorString(error: Int): String
 
+    /**
+     * Decodes an Opus packet
+     *
+     * @param input input payload
+     * @param inputBytes number of bytes in payload
+     * @param output output signal (interleaved if 2 channels). Length is
+     * `outputFrames * channels * sizeof(int16)`
+     * @param outputFrames number of samples per channel of available space in `output`.
+     * In the case of FEC (`fec`=1), `outputFrames` needs to be exactly the duration of audio that
+     * is missing, otherwise the decoder will not be in the optimal state to decode the next
+     * incoming packet. For the FEC case, must be a multiple of 2.5 ms.
+     * @param fec Flag (0 or 1) to request that any in-band forward error correction data be decoded.
+     * If no such data is available, the frame is decoded as if it were lost.
+     * @return number of decoded frames or an error code
+     */
     @FastNative
     external fun decode(
-        encodedData: ByteArray,
-        encodedBytes: Int,
-        decodedData: ByteArray,
-        decodedFrames: Int,
+        input: ByteArray,
+        inputBytes: Int,
+        output: ByteArray,
+        outputFrames: Int,
         fec: Int
     ): Int
 
+    /**
+     * Opus packet loss concealment (PLC).
+     *
+     * @param output output signal (interleaved if 2 channels). Length is
+     * `outputFrames * channels * sizeof(int16)`
+     * @param outputFrames number of samples per channel of available space in `output`.
+     * Needs to be exactly the duration of audio that is missing, otherwise the decoder will not be
+     * in the optimal state to decode the next incoming packet. Must be a multiple of 2.5 ms.
+     * @return number of decoded frames or an error code
+     */
     @FastNative
     external fun plc(
-        decodedData: ByteArray,
-        decodedFrames: Int,
-        fec: Int
+        output: ByteArray,
+        outputFrames: Int,
     ): Int
 }
