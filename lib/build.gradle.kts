@@ -48,7 +48,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.ashipo"
             artifactId = "jopus"
-            version = "0.2.1"
+            version = "0.3.0"
 
             afterEvaluate {
                 from(components["release"])
