@@ -2,13 +2,44 @@ package com.fake.jopus
 
 import dalvik.annotation.optimization.FastNative
 
+/**
+ * No error
+ */
 const val OPUS_OK = 0
+
+/**
+ * One or more invalid/out of range arguments
+ */
 const val OPUS_BAD_ARG = -1
+
+/**
+ * Not enough bytes allocated in the buffer
+ */
 const val OPUS_BUFFER_TOO_SMALL = -2
+
+/**
+ * An internal error was detected
+ */
 const val OPUS_INTERNAL_ERROR = -3
+
+/**
+ * The compressed data passed is corrupted
+ */
 const val OPUS_INVALID_PACKET = -4
+
+/**
+ * Invalid/unsupported request number
+ */
 const val OPUS_UNIMPLEMENTED = -5
+
+/**
+ * An encoder or decoder structure is invalid or already freed
+ */
 const val OPUS_INVALID_STATE = -6
+
+/**
+ * Memory allocation has failed
+ */
 const val OPUS_ALLOC_FAIL = -7
 
 class Opus {
