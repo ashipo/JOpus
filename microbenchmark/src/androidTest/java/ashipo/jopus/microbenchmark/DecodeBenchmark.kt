@@ -1,11 +1,11 @@
-package com.fake.microbenchmark
+package ashipo.jopus.microbenchmark
 
 import androidx.benchmark.junit4.BenchmarkRule
 import androidx.benchmark.junit4.measureRepeated
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.fake.jopus.OPUS_OK
-import com.fake.jopus.Opus
+import ashipo.jopus.OPUS_OK
+import ashipo.jopus.Opus
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Rule

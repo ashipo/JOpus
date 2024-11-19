@@ -24,7 +24,7 @@ Add the dependency:
 
 ```
 dependencies {
-    implementation("com.github.ashipo:jopus:0.3.0")
+    implementation("com.github.ashipo:jopus:0.3.1")
 }
 ```
 

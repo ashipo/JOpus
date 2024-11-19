@@ -1,4 +1,4 @@
-package com.fake.jopus
+package ashipo.jopus
 
 import dalvik.annotation.optimization.FastNative
 

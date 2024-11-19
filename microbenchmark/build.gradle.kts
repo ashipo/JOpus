@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.fake.microbenchmark"
+    namespace = "ashipo.jopus.microbenchmark"
     compileSdk = 34
 
     compileOptions {
