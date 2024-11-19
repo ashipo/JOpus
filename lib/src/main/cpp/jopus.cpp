@@ -81,7 +81,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         return JNI_ERR;
     }
 
-    jclass c = env->FindClass("com/fake/jopus/Opus");
+    jclass c = env->FindClass("ashipo/jopus/Opus");
     if (c == nullptr) return JNI_ERR;
 
     static const JNINativeMethod methods[] = {

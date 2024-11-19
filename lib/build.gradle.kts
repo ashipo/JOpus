@@ -9,7 +9,7 @@ kotlin {
 }
 
 android {
-    namespace = "com.fake.jopus"
+    namespace = "ashipo.jopus"
     compileSdk = 34
 
     defaultConfig {
@@ -48,7 +48,7 @@ publishing {
         register<MavenPublication>("release") {
             groupId = "com.github.ashipo"
             artifactId = "jopus"
-            version = "0.3.0"
+            version = "0.3.1"
 
             afterEvaluate {
                 from(components["release"])
