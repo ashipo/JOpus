@@ -74,6 +74,45 @@ jint JNICALL plc(JNIEnv *env, jobject, jbyteArray decodedData, jint decodedFrame
     return result;
 }
 
+jint JNICALL decodeFloat(JNIEnv *env, jobject, jbyteArray encodedData, jint encodedBytes,
+                                   jfloatArray decodedData, jint decodedFrames, jint fec) {
+    auto *nativeEncodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(encodedData, 0));
+    auto *nativeDecodedData = reinterpret_cast<float *>(env->GetPrimitiveArrayCritical(decodedData, 0));
+    const int result = opus_decode_float(
+            decoder_.get(),
+            reinterpret_cast<const unsigned char *>(nativeEncodedData),
+            encodedBytes,
+            nativeDecodedData,
+            decodedFrames,
+            fec
+    );
+    env->ReleasePrimitiveArrayCritical(decodedData, nativeDecodedData, 0);
+    env->ReleasePrimitiveArrayCritical(encodedData, nativeEncodedData, JNI_ABORT);
+
+    if (result < 0) {
+        __android_log_print(ANDROID_LOG_ERROR, TAG, "Decode float error: %s", opus_strerror(result));
+    }
+    return result;
+}
+
+jint JNICALL plcFloat(JNIEnv *env, jobject, jfloatArray decodedData, jint decodedFrames) {
+    auto *nativeDecodedData = reinterpret_cast<float *>(env->GetPrimitiveArrayCritical(decodedData, 0));
+    const int result = opus_decode_float(
+            decoder_.get(),
+            nullptr,
+            0,
+            nativeDecodedData,
+            decodedFrames,
+            0
+    );
+    env->ReleasePrimitiveArrayCritical(decodedData, nativeDecodedData, 0);
+
+    if (result < 0) {
+        __android_log_print(ANDROID_LOG_ERROR, TAG, "Decode float PLC error: %s", opus_strerror(result));
+    }
+    return result;
+}
+
 // https://developer.android.com/training/articles/perf-jni#native-libraries
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     JNIEnv* env;
@@ -90,6 +129,8 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
         {"getErrorString", "(I)Ljava/lang/String;", reinterpret_cast<void*>(getErrorString)},
         {"decode", "([BI[BII)I", reinterpret_cast<void*>(decode)},
         {"plc", "([BI)I", reinterpret_cast<void*>(plc)},
+        {"decodeFloat", "([BI[FII)I", reinterpret_cast<void*>(decodeFloat)},
+        {"plcFloat", "([FI)I", reinterpret_cast<void*>(plcFloat)},
     };
     int rc = env->RegisterNatives(c, methods, sizeof(methods)/sizeof(JNINativeMethod));
     if (rc != JNI_OK) return rc;
