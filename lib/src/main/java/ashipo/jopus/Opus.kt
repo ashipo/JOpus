@@ -114,4 +114,19 @@ class Opus {
         output: ByteArray,
         outputFrames: Int,
     ): Int
+
+    @FastNative
+    external fun decodeFloat(
+        input: ByteArray,
+        inputBytes: Int,
+        output: FloatArray,
+        outputFrames: Int,
+        fec: Int
+    ): Int
+
+    @FastNative
+    external fun plcFloat(
+        output: FloatArray,
+        outputFrames: Int,
+    ): Int
 }
