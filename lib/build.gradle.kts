@@ -1,31 +1,31 @@
 plugins {
-    id("com.android.library")
-    id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
     `maven-publish`
 }
 
 kotlin {
-    jvmToolchain(8)
+    jvmToolchain(17)
 }
 
 android {
     namespace = "ashipo.jopus"
-    compileSdk = 34
-
+    compileSdk {
+        version = release(36) {
+            minorApiLevel = 1
+        }
+    }
     defaultConfig {
         minSdk = 21
-
         externalNativeBuild {
             cmake {
                 cppFlags += listOf()
             }
         }
     }
-
     buildTypes {
         release {
             consumerProguardFiles("proguard-rules.pro")
-
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -37,7 +37,6 @@ android {
             path = file("src/main/cpp/CMakeLists.txt")
         }
     }
-    buildToolsVersion = "34.0.0"
     publishing {
         singleVariant("release") {
             withSourcesJar()

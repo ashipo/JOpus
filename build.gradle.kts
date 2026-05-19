@@ -1,5 +1,5 @@
 plugins {
-    id("com.android.library") version "8.13.2" apply false
-    id("org.jetbrains.kotlin.android") version "2.0.20" apply false
-    id("androidx.benchmark") version "1.3.3" apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.benchmark) apply false
 }
