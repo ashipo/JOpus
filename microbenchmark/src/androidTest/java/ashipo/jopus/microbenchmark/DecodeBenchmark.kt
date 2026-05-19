@@ -22,10 +22,16 @@ class DecodeBenchmark {
     private val outputFrames = 5760
 
     /**
-     * Output signal buffer
+     * Integer output signal buffer
      * Size = 5760 (maximum packet frames) * 2 (channels) * 2 (sizeof(int16))
      */
     private val output = ByteArray(outputFrames * 2 * 2)
+
+    /**
+     * Float output signal buffer
+     * Size = 5760 (maximum packet frames) * 2 (channels) * 2 (sizeof(float))
+     */
+    private val outputFloat = FloatArray(outputFrames * 2 * 4)
     private val samplingRate = 48_000
     private val channels = 2
 
@@ -75,6 +81,48 @@ class DecodeBenchmark {
             }
 
             val framesDecoded = opus.plc(output, plcFrames)
+
+            runWithMeasurementDisabled {
+                assertFalse("PLC error: $framesDecoded", framesDecoded < 0)
+            }
+        }
+        opus.releaseDecoder()
+    }
+
+    @Test
+    fun decodeFloat() {
+        val opus = Opus()
+        val initResult = opus.initDecoder(samplingRate, channels)
+        assertEquals("Decoder init error: $initResult", OPUS_OK, initResult)
+        benchmarkRule.measureRepeated {
+            val framesDecoded = opus.decodeFloat(opusData, 320, outputFloat, outputFrames, 0)
+
+            runWithMeasurementDisabled {
+                assertFalse("Decode error: $framesDecoded", framesDecoded < 0)
+            }
+        }
+        opus.releaseDecoder()
+    }
+
+    @Test
+    fun plcFloat() {
+        // 20ms, 48kHz
+        val plcFrames = 960
+
+        val opus = Opus()
+        val initResult = opus.initDecoder(samplingRate, channels)
+        assertEquals("Decoder init error: $initResult", OPUS_OK, initResult)
+        benchmarkRule.measureRepeated {
+            runWithMeasurementDisabled {
+                // Decode several non PLC packets in between
+                repeat(3) {
+                    val framesDecoded =
+                        opus.decodeFloat(opusData, 320, outputFloat, outputFrames, 0)
+                    assertFalse("Decode error: $framesDecoded", framesDecoded < 0)
+                }
+            }
+
+            val framesDecoded = opus.plcFloat(outputFloat, plcFrames)
 
             runWithMeasurementDisabled {
                 assertFalse("PLC error: $framesDecoded", framesDecoded < 0)
