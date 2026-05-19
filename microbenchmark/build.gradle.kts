@@ -17,7 +17,6 @@ android {
     }
     defaultConfig {
         minSdk = 27
-
         testInstrumentationRunner = "androidx.benchmark.junit4.AndroidBenchmarkRunner"
     }
     testBuildType = "release"
