@@ -50,7 +50,7 @@ class DecodeBenchmark {
         benchmarkRule.measureRepeated {
             val framesDecoded = opus.decode(opusData, 320, output, outputFrames, 0)
 
-            runWithTimingDisabled {
+            runWithMeasurementDisabled {
                 assertFalse("Decode error: $framesDecoded", framesDecoded < 0)
             }
         }
@@ -66,7 +66,7 @@ class DecodeBenchmark {
         val initResult = opus.initDecoder(samplingRate, channels)
         assertEquals("Decoder init error: $initResult", OPUS_OK, initResult)
         benchmarkRule.measureRepeated {
-            runWithTimingDisabled {
+            runWithMeasurementDisabled {
                 // Decode several non PLC packets in between
                 repeat(3) {
                     val framesDecoded = opus.decode(opusData, 320, output, outputFrames, 0)
@@ -76,7 +76,7 @@ class DecodeBenchmark {
 
             val framesDecoded = opus.plc(output, plcFrames)
 
-            runWithTimingDisabled {
+            runWithMeasurementDisabled {
                 assertFalse("PLC error: $framesDecoded", framesDecoded < 0)
             }
         }

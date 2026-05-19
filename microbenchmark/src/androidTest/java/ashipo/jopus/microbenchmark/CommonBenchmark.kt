@@ -25,7 +25,7 @@ class CommonBenchmark {
         benchmarkRule.measureRepeated {
             val initResult = opus.initDecoder(48_000, 2)
 
-            runWithTimingDisabled {
+            runWithMeasurementDisabled {
                 opus.releaseDecoder()
                 assertEquals("Decoder init error: $initResult", OPUS_OK, initResult)
             }
@@ -36,7 +36,7 @@ class CommonBenchmark {
     fun releaseDecoder() {
         val opus = Opus()
         benchmarkRule.measureRepeated {
-            runWithTimingDisabled {
+            runWithMeasurementDisabled {
                 val initResult = opus.initDecoder(48_000, 2)
                 assertEquals("Decoder init error: $initResult", OPUS_OK, initResult)
             }
