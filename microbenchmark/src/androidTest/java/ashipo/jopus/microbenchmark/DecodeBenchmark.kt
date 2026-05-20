@@ -20,20 +20,20 @@ class DecodeBenchmark {
      * Maximum packet frames (120ms, 48kHz)
      */
     private val outputFrames = 5760
+    private val samplingRate = 48_000
+    private val channels = 2
 
     /**
      * Integer output signal buffer
      * Size = 5760 (maximum packet frames) * 2 (channels) * 2 (sizeof(int16))
      */
-    private val output = ByteArray(outputFrames * 2 * 2)
+    private val output = ByteArray(outputFrames * channels * 2)
 
     /**
      * Float output signal buffer
-     * Size = 5760 (maximum packet frames) * 2 (channels) * 2 (sizeof(float))
+     * Size = 5760 (maximum packet frames) * 2 (channels) * 4 (sizeof(float))
      */
-    private val outputFloat = FloatArray(outputFrames * 2 * 4)
-    private val samplingRate = 48_000
-    private val channels = 2
+    private val outputFloat = FloatArray(outputFrames * channels * 4)
 
     /**
      * Table-of-contents (TOC) byte for FB (48 KHz), stereo, 20 ms per frame, single frame packet

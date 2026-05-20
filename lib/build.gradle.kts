@@ -17,6 +17,7 @@ android {
     }
     defaultConfig {
         minSdk = 21
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
             cmake {
                 cppFlags += listOf()
@@ -42,6 +43,11 @@ android {
             withSourcesJar()
         }
     }
+}
+
+dependencies {
+    androidTestImplementation(libs.androidx.runner)
+    androidTestImplementation(libs.test.parameter.injector)
 }
 
 publishing {
