@@ -76,7 +76,7 @@ class Opus {
     external fun getErrorString(error: Int): String
 
     /**
-     * Decodes an Opus packet
+     * Decodes an Opus packet.
      *
      * @param input input payload
      * @param inputBytes number of bytes in payload
@@ -85,7 +85,7 @@ class Opus {
      * @param outputFrames number of samples per channel of available space in `output`.
      * In the case of FEC (`fec`=1), `outputFrames` needs to be exactly the duration of audio that
      * is missing, otherwise the decoder will not be in the optimal state to decode the next
-     * incoming packet. For the FEC case, must be a multiple of 2.5 ms.
+     * incoming packet. For the FEC case, **must** be a multiple of 2.5 ms.
      * @param fec Flag (0 or 1) to request that any in-band forward error correction data be decoded.
      * If no such data is available, the frame is decoded as if it were lost.
      * @return number of decoded frames or an error code
@@ -106,7 +106,7 @@ class Opus {
      * `outputFrames * channels * sizeof(int16)`
      * @param outputFrames number of samples per channel of available space in `output`.
      * Needs to be exactly the duration of audio that is missing, otherwise the decoder will not be
-     * in the optimal state to decode the next incoming packet. Must be a multiple of 2.5 ms.
+     * in the optimal state to decode the next incoming packet. **Must** be a multiple of 2.5 ms.
      * @return number of decoded frames or an error code
      */
     @FastNative
@@ -115,6 +115,21 @@ class Opus {
         outputFrames: Int,
     ): Int
 
+    /**
+     * Decodes an Opus packet with floating point output.
+     *
+     * @param input input payload
+     * @param inputBytes number of bytes in payload
+     * @param output output signal (interleaved if 2 channels). Length is
+     * `outputFrames * channels * sizeof(float)`
+     * @param outputFrames number of samples per channel of available space in `output`.
+     * In the case of FEC (`fec`=1), `outputFrames` needs to be exactly the duration of audio that
+     * is missing, otherwise the decoder will not be in the optimal state to decode the next
+     * incoming packet. For the FEC case, **must** be a multiple of 2.5 ms.
+     * @param fec Flag (0 or 1) to request that any in-band forward error correction data be decoded.
+     * If no such data is available, the frame is decoded as if it were lost.
+     * @return number of decoded frames or an error code
+     */
     @FastNative
     external fun decodeFloat(
         input: ByteArray,
@@ -124,6 +139,16 @@ class Opus {
         fec: Int
     ): Int
 
+    /**
+     * Opus packet loss concealment (PLC) with floating point output.
+     *
+     * @param output output signal (interleaved if 2 channels). Length is
+     * `outputFrames * channels * sizeof(float)`
+     * @param outputFrames number of samples per channel of available space in `output`.
+     * Needs to be exactly the duration of audio that is missing, otherwise the decoder will not be
+     * in the optimal state to decode the next incoming packet. **Must** be a multiple of 2.5 ms.
+     * @return number of decoded frames or an error code
+     */
     @FastNative
     external fun plcFloat(
         output: FloatArray,
