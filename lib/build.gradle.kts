@@ -15,6 +15,7 @@ android {
             minorApiLevel = 1
         }
     }
+    ndkVersion = "29.0.14206865"
     defaultConfig {
         minSdk = 21
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
