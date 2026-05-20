@@ -36,7 +36,15 @@ jstring JNICALL getErrorString(JNIEnv* env, jobject, jint error) {
     return env->NewStringUTF(opus_strerror(error));
 }
 
-jint JNICALL decode(JNIEnv *env, jobject, jbyteArray encodedData, jint encodedBytes, jbyteArray decodedData, jint decodedFrames, jint fec) {
+jint JNICALL decode(
+    JNIEnv *env,
+    jobject,
+    jbyteArray encodedData,
+    jint encodedBytes,
+    jbyteArray decodedData,
+    jint decodedFrames,
+    jint fec
+) {
     auto *nativeEncodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(encodedData, 0));
     auto *nativeDecodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(decodedData, 0));
     const int result = opus_decode(
@@ -74,8 +82,15 @@ jint JNICALL plc(JNIEnv *env, jobject, jbyteArray decodedData, jint decodedFrame
     return result;
 }
 
-jint JNICALL decodeFloat(JNIEnv *env, jobject, jbyteArray encodedData, jint encodedBytes,
-                                   jfloatArray decodedData, jint decodedFrames, jint fec) {
+jint JNICALL decodeFloat(
+    JNIEnv *env,
+    jobject,
+    jbyteArray encodedData,
+    jint encodedBytes,
+    jfloatArray decodedData,
+    jint decodedFrames,
+    jint fec
+) {
     auto *nativeEncodedData = reinterpret_cast<jbyte *>(env->GetPrimitiveArrayCritical(encodedData, 0));
     auto *nativeDecodedData = reinterpret_cast<float *>(env->GetPrimitiveArrayCritical(decodedData, 0));
     const int result = opus_decode_float(
@@ -113,7 +128,7 @@ jint JNICALL plcFloat(JNIEnv *env, jobject, jfloatArray decodedData, jint decode
     return result;
 }
 
-// https://developer.android.com/training/articles/perf-jni#native-libraries
+// https://developer.android.com/ndk/guides/jni-tips#native-libraries
 JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
     JNIEnv* env;
     if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
