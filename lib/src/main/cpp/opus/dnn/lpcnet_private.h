@@ -12,7 +12,7 @@
 #define PITCH_FRAME_SIZE 320
 #define PITCH_BUF_SIZE (PITCH_MAX_PERIOD+PITCH_FRAME_SIZE)
 
-#define PLC_MAX_FEC 100
+#define PLC_MAX_FEC 104
 #define MAX_FEATURE_BUFFER_SIZE 4
 
 #define PITCH_IF_MAX_FREQ 30
@@ -46,7 +46,7 @@ typedef struct {
   float gru2_state[PLC_GRU2_STATE_SIZE];
 } PLCNetState;
 
-#define PLC_BUF_SIZE ((CONT_VECTORS+5)*FRAME_SIZE)
+#define PLC_BUF_SIZE ((CONT_VECTORS+10)*FRAME_SIZE)
 struct LPCNetPLCState {
   PLCModel model;
   FARGANState fargan;
