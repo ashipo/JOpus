@@ -51,7 +51,7 @@ class Opus {
     }
 
     /**
-     * Initiates the decoder
+     * Initiates the decoder. Releases the previously initiated decoder, if one exists.
      *
      * @param sampleRate sample rate to decode at (Hz). Must be one of 8000, 12000, 16000, 24000
      * or 48000
@@ -61,13 +61,13 @@ class Opus {
     external fun initDecoder(sampleRate: Int, channels: Int): Int
 
     /**
-     * Destroys the decoder
+     * Destroys the decoder.
      */
     @FastNative
     external fun releaseDecoder()
 
     /**
-     * Converts an Opus error code into a human readable string
+     * Converts an Opus error code into a human-readable string.
      *
      * @param error error code
      * @return error string
@@ -76,7 +76,7 @@ class Opus {
     external fun getErrorString(error: Int): String
 
     /**
-     * Decodes an Opus packet.
+     * Decodes an Opus packet. Must be initiated with `initDecoder` first.
      *
      * @param input input payload
      * @param inputBytes number of bytes in payload
@@ -100,7 +100,7 @@ class Opus {
     ): Int
 
     /**
-     * Opus packet loss concealment (PLC).
+     * Opus packet loss concealment (PLC). Must be initiated with `initDecoder` first.
      *
      * @param output output signal (interleaved if 2 channels). Length is
      * `outputFrames * channels * sizeof(int16)`
@@ -116,7 +116,7 @@ class Opus {
     ): Int
 
     /**
-     * Decodes an Opus packet with floating point output.
+     * Decodes an Opus packet with floating point output. Must be initiated with `initDecoder` first.
      *
      * @param input input payload
      * @param inputBytes number of bytes in payload
@@ -140,7 +140,8 @@ class Opus {
     ): Int
 
     /**
-     * Opus packet loss concealment (PLC) with floating point output.
+     * Opus packet loss concealment (PLC) with floating point output. Must be initiated with
+     * `initDecoder` first.
      *
      * @param output output signal (interleaved if 2 channels). Length is
      * `outputFrames * channels * sizeof(float)`
