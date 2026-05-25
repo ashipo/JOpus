@@ -1,21 +1,24 @@
 # JOpus
 
 Android library wrapper of the [Opus](https://github.com/xiph/opus) codec.
-Only decoding to fixed-point signal is supported.
+Decoding to fixed-point and floating-point signal is supported.
 
 ## Installation
 
 JOpus is distributed using [JitPack](https://jitpack.io/#ashipo/jopus).
 
-Add the JitPack repository to your build file:
+Add the JitPack repository to your `settings.gradle.kts`:
 
 ```
-repositories {
-    // Rest of the repositories
-    maven {
-        url = uri("https://www.jitpack.io")
-        // Optionally exclude the dependency search from other repositories for security and performance reasons.
-        content { includeGroup("com.github.ashipo") }
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        // Rest of the repositories
+        maven {
+            url = uri("https://jitpack.io")
+            // Optionally exclude the dependency search from other repositories for security and performance reasons.
+            content { includeGroup("com.github.ashipo") }
+        }
     }
 }
 ```
@@ -24,7 +27,7 @@ Add the dependency:
 
 ```
 dependencies {
-    implementation("com.github.ashipo:jopus:0.3.1")
+    implementation("com.github.ashipo:jopus:Version")
 }
 ```
 
