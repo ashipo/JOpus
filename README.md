@@ -1,3 +1,5 @@
+
+
 # JOpus
 
 Android library wrapper of the [Opus](https://github.com/xiph/opus) codec.
@@ -46,6 +48,9 @@ if (initResult != OPUS_OK) {
 // Returns the number of frames(samples per channel) decoded from the packet.
 // If that value is negative, then an error has occurred.
 val framesDecodedOrError = opus.decode(encodedData, encodedBytes, outputBuffer, outputBufferFrames, fec)
+// For floating-point decoding (float), use decodeFloat instead:
+// val framesDecodedOrError = opus.decodeFloat(encodedData, encodedBytes, outputBufferFloat, outputBufferFrames, fec)
+
 if (framesDecodedOrError < 0) {
     val errorString = opus.getErrorString(framesDecodedOrError)
     // Handle decoding error
